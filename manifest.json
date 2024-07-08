@@ -1,0 +1,15 @@
+{
+    "name": "Score Extentsion",
+    
+    "action": {
+      "default_popup": "popup.html"
+    }, 
+
+    "manifest_version": 3,
+    "version": "1.0.0",
+    "description": "MLB score tracker",
+    "icons": {
+      "48": "bat-ball.png",
+      "128": "bat-ball.png"
+   }
+}
