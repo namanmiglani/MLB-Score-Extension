@@ -32,15 +32,25 @@ body{
     padding: 5px;
     gap: 4px;
     align-items: center;
+    margin: 0px;
+    padding-top: 0px;
     }
 
 a{
     text-decoration: none;
     text-decoration-color: black;
     color: black;
+    padding: 0px;
+    margin: 0px;
 }
 
 header{
     display: flex;
     justify-content: space-evenly;
 }
+
+.status{
+    padding: 0px;
+    margin: 0px;
+}
+

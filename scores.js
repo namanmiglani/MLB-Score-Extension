@@ -11,54 +11,72 @@ const body = document.querySelector('body');
 
 function monthConversion(n) {
     switch (n) {
-       case '01':
+       case 0:
          return "JAN";
          break;
-       case '02':
+       case 1:
          return "FEB";
          break;
-       case '03':
+       case 2:
          return "MAR";
          break;
-       case '04':
+       case 3:
          return "APR";
          break;
-       case '05':
+       case 4:
          return "MAY";
          break;
-       case '06':
+       case 5:
          return "JUN";
          break;
-       case '07':
+       case 6:
          return "JUL";
-       case '08':
+       case 7:
          return "AUG";
          break;
-       case '09':
+       case 8:
          return "SEP";
          break;
-       case '10':
+       case 9:
          return "OCT";
          break;
-       case '11':
+       case 10:
          return "NOV";
          break;
-       case '12':
+       case 11:
          return "DEC";
          break;
     }
 }
 
-function dateDaysBefore(days) {
-    var d = new Date();
-    d.setDate(d.getDate() - days);
-    let fullForm = d.toISOString().substring(5,10);
+function timeConversion(hour) {
+  if (0 <= hour && hour <= 4) {
+    return (hour + 8);
+  } else if (5 <= hour && hour <= 16) {
+    return (hour - 4);
+  } else if (17 <= hour && hour <= 23) {
+    return (hour - 16);
+  }
+}
 
-    return monthConversion(fullForm.substring(0,2)) + " " + fullForm.substring(3,5)
+function dayTime(hour) {
+  if (4 <= hour && hour <= 15) {
+    return "am";
+  } else {
+    return "pm";
+  }
+}
+
+function dateDaysBefore(days) {
+    let d = new Date();
+    d.setDate(d.getDate() - days);
+    //let fullForm = d.toISOString().substring(5,10);
+
+    return monthConversion(d.getMonth()) + " " + d.getDate()
 }
 
 function dateDaysBeforeLink(days) {
-    var d = new Date();
+    let d = new Date();
     d.setDate(d.getDate() - days);
 
     gamesURL = `${apiURL}${d.getMonth()+1}/${d.getDate()}/${d.getFullYear()}`
@@ -72,30 +90,40 @@ function headerDaysBeforeAfter() {
     twoDayAgoDiv.textContent=twoDayAgo;
     twoDayAgoDiv.addEventListener('click', function(){
     dateDaysBeforeLink(2)
-    console.log('clickes')
-    console.log(gamesURL)
     });
     header.appendChild(twoDayAgoDiv)
 
     let oneDayAgo = dateDaysBefore(1)
     let oneDayAgoDiv = document.createElement('div')
     oneDayAgoDiv.textContent=oneDayAgo;
+    oneDayAgoDiv.addEventListener('click', function(){
+    dateDaysBeforeLink(1)
+    });
     header.appendChild(oneDayAgoDiv)
 
 
     let today = dateDaysBefore(0)
     let todayDiv = document.createElement('div')
     todayDiv.textContent=today;
+    todayDiv.addEventListener('click', function(){
+    dateDaysBeforeLink(0)
+    });
     header.appendChild(todayDiv)
 
     let oneDayAhead = dateDaysBefore(-1)
     let oneDayAheadDiv = document.createElement('div')
     oneDayAheadDiv.textContent=oneDayAhead;
+    oneDayAheadDiv.addEventListener('click', function(){
+    dateDaysBeforeLink(-1)
+    });
     header.appendChild(oneDayAheadDiv)
 
     let twoDaysAhead = dateDaysBefore(-2)
     let twoDaysAheadDiv = document.createElement('div')
     twoDaysAheadDiv.textContent=twoDaysAhead;
+    twoDaysAheadDiv.addEventListener('click', function(){
+    dateDaysBeforeLink(-2)
+    });
     header.appendChild(twoDaysAheadDiv)
 }
 
@@ -108,8 +136,8 @@ function getDate() {
     let year = date.getFullYear();
 
  
-    currentDate = year + ('0' + day).slice(-2)
-             + ('0' + month).slice(-2) 
+    currentDate = year + ('0' + month).slice(-2)
+             + ('0' + day).slice(-2) 
     //`${month}${day}${year}`;
     
     gamesURL = `${apiURL}${month}/${day}/${year}`
@@ -127,35 +155,64 @@ function boxScore(home, away){
 
 
 const populateScoreboard = (game, body) => {
-
-    
-    const gameBox  = document.createElement('div');
-    gameBox.classList = 'score-box grid-item';
-    gameBox.innerHTML = ` 
-    
-    <a href= ${boxScore(teamAbbreviation(((((game['teams'])['home'])['team'])['name'])), teamAbbreviation(((((game['teams'])['away'])['team'])['name'])))} target="_blank">
-    <div class="with-image">
-    <img src=${teamLogo(((((game['teams'])['home'])['team'])['name']))} height="20px" width="20px">
-    <div>${teamAbbreviation(((((game['teams'])['home'])['team'])['name']))} : ${(((game['teams'])['home'])['score'])} </div>
-    </div>
-    <div class="with-image">
-    <img src=${teamLogo(((((game['teams'])['away'])['team'])['name']))} height="20px" width="20px">
-    <div>${teamAbbreviation(((((game['teams'])['away'])['team'])['name']))} : ${(((game['teams'])['away'])['score'])}</div>
-    </div>
-    </a>
-    `;
-
-    //((((game['teams'])['home'])['team'])['name'])
-
-
-//console.log(teamNameData)
-
-
-
-
-    document.getElementById('grid-container').appendChild(gameBox);
-
-    
+  console.log(game)
+  //${((game['status'])['detailedState'])}
+    if ((((game['status'])['detailedState']) === "In Progress")){
+      const gameBox  = document.createElement('div');
+      gameBox.classList = 'score-box grid-item';
+      gameBox.innerHTML = ` 
+      
+      <a href= ${boxScore(teamAbbreviation(((((game['teams'])['home'])['team'])['name'])), teamAbbreviation(((((game['teams'])['away'])['team'])['name'])))} target="_blank">
+      <p class="status">Live<p>
+      <div class="with-image">
+      <img src=${teamLogo(((((game['teams'])['home'])['team'])['name']))} height="20px" width="20px">
+      <div>${teamAbbreviation(((((game['teams'])['home'])['team'])['name']))} : ${(((game['teams'])['home'])['score'])} </div>
+      </div>
+      <div class="with-image">
+      <img src=${teamLogo(((((game['teams'])['away'])['team'])['name']))} height="20px" width="20px">
+      <div>${teamAbbreviation(((((game['teams'])['away'])['team'])['name']))} : ${(((game['teams'])['away'])['score'])}</div>
+      </div>
+      </a>
+      `;
+      document.getElementById('grid-container').appendChild(gameBox);
+    } else if ((((game['status'])['detailedState']) === "Final")){
+      const gameBox  = document.createElement('div');
+      gameBox.classList = 'score-box grid-item';
+      gameBox.innerHTML = ` 
+      
+      <a href= ${boxScore(teamAbbreviation(((((game['teams'])['home'])['team'])['name'])), teamAbbreviation(((((game['teams'])['away'])['team'])['name'])))} target="_blank">
+      <p class="status">Final<p>
+      <div class="with-image">
+      <img src=${teamLogo(((((game['teams'])['home'])['team'])['name']))} height="20px" width="20px">
+      <div>${teamAbbreviation(((((game['teams'])['home'])['team'])['name']))} : ${(((game['teams'])['home'])['score'])} </div>
+      </div>
+      <div class="with-image">
+      <img src=${teamLogo(((((game['teams'])['away'])['team'])['name']))} height="20px" width="20px">
+      <div>${teamAbbreviation(((((game['teams'])['away'])['team'])['name']))} : ${(((game['teams'])['away'])['score'])}</div>
+      </div>
+      </a>
+      `;
+      document.getElementById('grid-container').appendChild(gameBox);
+    } else {
+      const gameBox  = document.createElement('div');
+      gameBox.classList = 'score-box grid-item';
+      gameBox.innerHTML = ` 
+      
+      <a href= ${boxScore(teamAbbreviation(((((game['teams'])['home'])['team'])['name'])), teamAbbreviation(((((game['teams'])['away'])['team'])['name'])))} target="_blank">
+      <p class="status">${String(timeConversion(Number((game['gameDate']).substring(11,13)))) + (game['gameDate']).substring(13,16) + " " + dayTime(Number((game['gameDate']).substring(11,13)))}<p>
+      <div class="with-image">
+      <img src=${teamLogo(((((game['teams'])['home'])['team'])['name']))} height="20px" width="20px">
+      <div>${teamAbbreviation(((((game['teams'])['home'])['team'])['name']))}</div>
+      </div>
+      <div class="with-image">
+      <img src=${teamLogo(((((game['teams'])['away'])['team'])['name']))} height="20px" width="20px">
+      <div>${teamAbbreviation(((((game['teams'])['away'])['team'])['name']))}</div>
+      </div>
+      </a>
+      `;
+      document.getElementById('grid-container').appendChild(gameBox);   
+    }
+    //((game['status'])['detailedState'])
 }
 
 const populateScoresForDay = (data, day, body) => {
@@ -190,7 +247,7 @@ const updateScore = (scoreboardId, data, isError) => {
     }
 }
 
-const fetchScoresData = setInterval( 
+const fetchScoresData = //setInterval( 
     (filterParams) => {
         fetch(gamesURL)
         .then(response => {
@@ -205,8 +262,6 @@ const fetchScoresData = setInterval(
             console.error(err);
         });
 }
-, 1000);
+//, 1000);
 
 fetchScoresData();
-
-

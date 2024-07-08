@@ -1,5 +1,5 @@
 TODO 
-- Add game status
-- Allow 5-day scrolling
+- Add game status - time
 - Add standings
 - Notifications
+- Better look
