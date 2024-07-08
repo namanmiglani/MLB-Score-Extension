@@ -9,6 +9,98 @@ let teamNameData;
 let currentDate;
 const body = document.querySelector('body');
 
+function monthConversion(n) {
+    switch (n) {
+       case '01':
+         return "JAN";
+         break;
+       case '02':
+         return "FEB";
+         break;
+       case '03':
+         return "MAR";
+         break;
+       case '04':
+         return "APR";
+         break;
+       case '05':
+         return "MAY";
+         break;
+       case '06':
+         return "JUN";
+         break;
+       case '07':
+         return "JUL";
+       case '08':
+         return "AUG";
+         break;
+       case '09':
+         return "SEP";
+         break;
+       case '10':
+         return "OCT";
+         break;
+       case '11':
+         return "NOV";
+         break;
+       case '12':
+         return "DEC";
+         break;
+    }
+}
+
+function dateDaysBefore(days) {
+    var d = new Date();
+    d.setDate(d.getDate() - days);
+    let fullForm = d.toISOString().substring(5,10);
+
+    return monthConversion(fullForm.substring(0,2)) + " " + fullForm.substring(3,5)
+}
+
+function dateDaysBeforeLink(days) {
+    var d = new Date();
+    d.setDate(d.getDate() - days);
+
+    gamesURL = `${apiURL}${d.getMonth()+1}/${d.getDate()}/${d.getFullYear()}`
+}
+
+function headerDaysBeforeAfter() {
+    const header = document.querySelector('header')
+    
+    let twoDayAgo = dateDaysBefore(2)
+    let twoDayAgoDiv = document.createElement('div')
+    twoDayAgoDiv.textContent=twoDayAgo;
+    twoDayAgoDiv.addEventListener('click', function(){
+    dateDaysBeforeLink(2)
+    console.log('clickes')
+    console.log(gamesURL)
+    });
+    header.appendChild(twoDayAgoDiv)
+
+    let oneDayAgo = dateDaysBefore(1)
+    let oneDayAgoDiv = document.createElement('div')
+    oneDayAgoDiv.textContent=oneDayAgo;
+    header.appendChild(oneDayAgoDiv)
+
+
+    let today = dateDaysBefore(0)
+    let todayDiv = document.createElement('div')
+    todayDiv.textContent=today;
+    header.appendChild(todayDiv)
+
+    let oneDayAhead = dateDaysBefore(-1)
+    let oneDayAheadDiv = document.createElement('div')
+    oneDayAheadDiv.textContent=oneDayAhead;
+    header.appendChild(oneDayAheadDiv)
+
+    let twoDaysAhead = dateDaysBefore(-2)
+    let twoDaysAheadDiv = document.createElement('div')
+    twoDaysAheadDiv.textContent=twoDaysAhead;
+    header.appendChild(twoDaysAheadDiv)
+}
+
+headerDaysBeforeAfter()
+
 
 function getDate() {
     let day = date.getDate();
@@ -68,7 +160,7 @@ const populateScoreboard = (game, body) => {
 
 const populateScoresForDay = (data, day, body) => {
     const entireDayContainer = document.createElement("div");
-
+    document.getElementById('grid-container').innerHTML = "";
 
     if (data){
         // If there are no games for that date, just show "No Games Scheduled"
@@ -98,7 +190,8 @@ const updateScore = (scoreboardId, data, isError) => {
     }
 }
 
-const fetchScoresData = (filterParams) => {
+const fetchScoresData = setInterval( 
+    (filterParams) => {
         fetch(gamesURL)
         .then(response => {
             return response.json();
@@ -112,6 +205,7 @@ const fetchScoresData = (filterParams) => {
             console.error(err);
         });
 }
+, 1000);
 
 fetchScoresData();
 
