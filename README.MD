@@ -1,5 +1,4 @@
 TODO 
-- Add game status - time
+- Add game inning status
 - Add standings
 - Notifications
-- Better look

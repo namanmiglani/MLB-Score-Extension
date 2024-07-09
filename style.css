@@ -1,3 +1,11 @@
+body{
+    background-color: beige;
+}
+
+header{
+    background-color: beige;
+}
+
 .score-box{
     padding: 10px;
 }
@@ -8,7 +16,7 @@ body{
 
 #grid-container {
     display: grid;
-    grid-template-columns: auto auto auto;
+    grid-template-columns: 160px 160px 160px;
     background-color: beige;
     padding: 10px;
   }
@@ -54,3 +62,14 @@ header{
     margin: 0px;
 }
 
+
+
+.days::selection{
+    color: black;
+}
+
+.days{
+    color: grey;
+    font-weight: 700;
+    font-size: 14px; 
+}
