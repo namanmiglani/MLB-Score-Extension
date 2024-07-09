@@ -64,12 +64,17 @@ header{
 
 
 
-.days::selection{
-    color: black;
-}
-
 .days{
     color: grey;
     font-weight: 700;
     font-size: 14px; 
+}
+
+button{
+    background: none;
+    border: 0;
+}
+
+button:focus{
+    color: black;
 }

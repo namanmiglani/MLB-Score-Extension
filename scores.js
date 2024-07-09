@@ -86,7 +86,7 @@ function headerDaysBeforeAfter() {
     const header = document.querySelector('header')
     
     let twoDayAgo = dateDaysBefore(2)
-    let twoDayAgoDiv = document.createElement('div')
+    let twoDayAgoDiv = document.createElement('button')
     twoDayAgoDiv.classList = "days"
     twoDayAgoDiv.textContent=twoDayAgo;
     twoDayAgoDiv.addEventListener('click', function(){
@@ -95,7 +95,7 @@ function headerDaysBeforeAfter() {
     header.appendChild(twoDayAgoDiv)
 
     let oneDayAgo = dateDaysBefore(1)
-    let oneDayAgoDiv = document.createElement('div')
+    let oneDayAgoDiv = document.createElement('button')
     oneDayAgoDiv.classList = "days"
     oneDayAgoDiv.textContent=oneDayAgo;
     oneDayAgoDiv.addEventListener('click', function(){
@@ -105,7 +105,7 @@ function headerDaysBeforeAfter() {
 
 
     let today = dateDaysBefore(0)
-    let todayDiv = document.createElement('div')
+    let todayDiv = document.createElement('button')
     todayDiv.classList = "days"
     todayDiv.textContent=today;
     todayDiv.addEventListener('click', function(){
@@ -114,7 +114,7 @@ function headerDaysBeforeAfter() {
     header.appendChild(todayDiv)
 
     let oneDayAhead = dateDaysBefore(-1)
-    let oneDayAheadDiv = document.createElement('div')
+    let oneDayAheadDiv = document.createElement('button')
     oneDayAheadDiv.classList = "days"
     oneDayAheadDiv.textContent=oneDayAhead;
     oneDayAheadDiv.addEventListener('click', function(){
@@ -123,7 +123,7 @@ function headerDaysBeforeAfter() {
     header.appendChild(oneDayAheadDiv)
 
     let twoDaysAhead = dateDaysBefore(-2)
-    let twoDaysAheadDiv = document.createElement('div')
+    let twoDaysAheadDiv = document.createElement('button')
     twoDaysAheadDiv.classList = "days"
     twoDaysAheadDiv.textContent=twoDaysAhead;
     twoDaysAheadDiv.addEventListener('click', function(){
