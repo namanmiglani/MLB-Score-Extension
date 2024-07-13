@@ -2,11 +2,15 @@ const date = new Date();
 
 const apiURL = 'http://statsapi.mlb.com/api/v1/schedule/games/?sportId=1&date=';
 const template = 'http://statsapi.mlb.com'
+const currentDayAPILink = 'http://localhost:8080/getScores'
 let teamLink;
 let gamesURL;
 let scoreData;
+let inningData;
+let idf;
 let teamNameData;
 let currentDate;
+let myMap = new Map();
 const body = document.querySelector('body');
 
 function monthConversion(n) {
@@ -157,10 +161,17 @@ function boxScore(home, away){
     return "https://www.cbssports.com/mlb/gametracker/boxscore/MLB_"+ currentDate +"_" + away + "@" + home + "/";
 }
 
+function inningSearch(){
+  idf.forEach(game => {
+    console.log(game)
+    myMap.set((game['gameGuid']), ((game['linescore'])['inningHalf']) + " " + ((game['linescore'])['currentInningOrdinal']))
+  });
+}
 
 
 const populateScoreboard = (game, body) => {
   console.log(game)
+  //console.log(game)
   //${((game['status'])['detailedState'])}
     if ((((game['status'])['detailedState']) === "In Progress")){
       const gameBox  = document.createElement('div');
@@ -168,7 +179,7 @@ const populateScoreboard = (game, body) => {
       gameBox.innerHTML = ` 
       
       <a href= ${boxScore(teamAbbreviation(((((game['teams'])['home'])['team'])['name'])), teamAbbreviation(((((game['teams'])['away'])['team'])['name'])))} target="_blank">
-      <p class="status">Live<p>
+      <p class="status">${myMap.get((game['gameGuid']))}<p>
       <div class="with-image">
       <img src=${teamLogo(((((game['teams'])['home'])['team'])['name']))} height="20px" width="20px">
       <div>${teamAbbreviation(((((game['teams'])['home'])['team'])['name']))} : ${(((game['teams'])['home'])['score'])} </div>
@@ -180,7 +191,7 @@ const populateScoreboard = (game, body) => {
       </a>
       `;
       document.getElementById('grid-container').appendChild(gameBox);
-    } else if ((((game['status'])['detailedState']) === "Final")){
+    } else if ((((game['status'])['abstractGameState']) === "Final") || (((game['status'])['detailedState']) === "Final")){
       const gameBox  = document.createElement('div');
       gameBox.classList = 'score-box grid-item';
       gameBox.innerHTML = ` 
@@ -252,7 +263,7 @@ const updateScore = (scoreboardId, data, isError) => {
     }
 }
 
-const fetchScoresData = //setInterval( 
+const fetchScoresData = setInterval( 
     (filterParams) => {
         fetch(gamesURL)
         .then(response => {
@@ -267,6 +278,39 @@ const fetchScoresData = //setInterval(
             console.error(err);
         });
 }
-//, 1000);
+, 1000);
 
-fetchScoresData();
+fetchScoresData;
+
+
+const updateInning = (scoreboardId, data, isError) => {
+  const body = document.getElementById(scoreboardId);
+  //console.log((((data["dates"])[0])['games']))
+  idf = (((data["dates"])[0])['games'])
+  inningSearch()
+  //console.log(idf)
+}
+
+
+
+
+const fetchInningsData = setInterval( 
+  (filterParams) => {
+      fetch(currentDayAPILink)
+      .then(response => {
+          return response.json();
+      })
+      .then(function(data){
+          inningData = data;
+          updateInning("liveScoreboard", inningData);
+      })
+      .catch((err) => {
+          updateInning("liveScoreboard", inningData, true);
+          console.error(err);
+      });
+}
+, 10000);
+
+fetchInningsData();
+
+
