@@ -16,7 +16,7 @@ headers = {
   'sec-ch-ua-platform': '"Windows"'
 }
 
-while True:
+""" while True:
     r = requests.get(url, headers=headers)
 
     #print(r.text)
@@ -28,12 +28,12 @@ while True:
     with open("scores.json", "w") as file:
         json.dump(sd, file)
     
-    time.sleep(5)
+    time.sleep(60) """
 
 
 
-""" r = requests.get(url, headers=headers)
+r = requests.get(url, headers=headers)
 #print(r.text)
 sd = r.json()
 with open("scores.json", "w") as file:
-    json.dump(sd, file) """
+    json.dump(sd, file) 

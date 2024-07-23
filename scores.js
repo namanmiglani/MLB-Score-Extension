@@ -13,6 +13,11 @@ let currentDate;
 let myMap = new Map();
 const body = document.querySelector('body');
 
+function load() {
+  document.querySelector('#show').style.display = "block";
+  document.querySelector('#loading').style.display = "none";
+}
+
 function monthConversion(n) {
     switch (n) {
        case 0:
@@ -163,14 +168,14 @@ function boxScore(home, away){
 
 function inningSearch(){
   idf.forEach(game => {
-    console.log(game)
+    //console.log(game)
     myMap.set((game['gameGuid']), ((game['linescore'])['inningHalf']) + " " + ((game['linescore'])['currentInningOrdinal']))
   });
 }
 
 
 const populateScoreboard = (game, body) => {
-  console.log(game)
+  //console.log(game)
   //console.log(game)
   //${((game['status'])['detailedState'])}
     if ((((game['status'])['detailedState']) === "In Progress")){
@@ -179,7 +184,9 @@ const populateScoreboard = (game, body) => {
       gameBox.innerHTML = ` 
       
       <a href= ${boxScore(teamAbbreviation(((((game['teams'])['home'])['team'])['name'])), teamAbbreviation(((((game['teams'])['away'])['team'])['name'])))} target="_blank">
-      <p class="status">${myMap.get((game['gameGuid']))}<p>
+      <p class="status">
+      ${myMap.get((game['gameGuid']))}
+      <p>
       <div class="with-image">
       <img src=${teamLogo(((((game['teams'])['home'])['team'])['name']))} height="20px" width="20px">
       <div>${teamAbbreviation(((((game['teams'])['home'])['team'])['name']))} : ${(((game['teams'])['home'])['score'])} </div>
@@ -283,34 +290,46 @@ const fetchScoresData = setInterval(
 fetchScoresData;
 
 
-const updateInning = (scoreboardId, data, isError) => {
-  const body = document.getElementById(scoreboardId);
+const updateInning = (data, isError) => {
   //console.log((((data["dates"])[0])['games']))
   idf = (((data["dates"])[0])['games'])
+  console.log(idf)
   inningSearch()
-  //console.log(idf)
+  
 }
 
+const myHeaders = new Headers();
+myHeaders.append("sec-ch-ua", "\"Not/A)Brand\";v=\"8\", \"Chromium\";v=\"126\", \"Google Chrome\";v=\"126\"");
+myHeaders.append("Referer", "https://www.mlb.com/");
+myHeaders.append("sec-ch-ua-mobile", "?0");
+myHeaders.append("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36");
+myHeaders.append("sec-ch-ua-platform", "\"Windows\"");
+
+const requestOptions = {
+  method: "GET",
+  headers: myHeaders,
+  redirect: "follow"
+};
 
 
-
-const fetchInningsData = setInterval( 
-  (filterParams) => {
-      fetch(currentDayAPILink)
-      .then(response => {
-          return response.json();
-      })
-      .then(function(data){
-          inningData = data;
-          updateInning("liveScoreboard", inningData);
-      })
-      .catch((err) => {
-          updateInning("liveScoreboard", inningData, true);
-          console.error(err);
-      });
+function addOne(number){
+  return number+1;
 }
-, 10000);
 
+function inningLinkGen(){
+  return "https://statsapi.mlb.com/api/v1/schedule?sportId=1&sportId=51&sportId=21&startDate="+date.getFullYear() + "-" +  addOne(date.getMonth())  + "-" + date.getDate() +"&endDate="+date.getFullYear() + "-" + addOne(date.getMonth()) + "-" + date.getDate() +"&timeZone=America/New_York&gameType=E&&gameType=S&&gameType=R&&gameType=F&&gameType=D&&gameType=L&&gameType=W&&gameType=A&&gameType=C&language=en&leagueId=104&&leagueId=103&&leagueId=160&&leagueId=590&hydrate=team,linescore(matchup,runners),xrefId,story,flags,statusFlags,broadcasts(all),venue(location),decisions,person,probablePitcher,stats,game(content(media(epg),summary),tickets),seriesStatus(useOverride=true)&sortBy=gameDate,gameStatus,gameType"
+}
+
+function fetchInningsData() { //setInterval( 
+    fetch(inningLinkGen(), requestOptions)
+    .then((response) => response.json())
+    .then((result) => updateInning(result))
+    .catch((error) => console.error(error));
+}
+//, 1000);
 fetchInningsData();
 
+const intervalID = setInterval(fetchInningsData, 1000000)
+
+const switchScreen = setInterval(load, 1200)
 
