@@ -5,8 +5,8 @@
       "default_popup": "popup.html"
     }, 
 
-    "manifest_version": 3,
-    "version": "1.0.3",
+    "manifest_version": 4,
+    "version": "1.0.4",
     "description": "This extension keeps track of the score of all MLB games happening daily. It also allows quick access to the box scores of games.",
     "icons": {
       "16": "LogoExtension.png",

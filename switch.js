@@ -56,7 +56,7 @@ function teamLogo(name) {
        case "New York Yankees":
          return "images/New-York-Yankees-Symbol.png";
          break;
-       case "Oakland Athletics":
+       case "Athletics":
          return "images/mlb-oakland-athletics-logo.png";
          break;
        case "Philadelphia Phillies":
@@ -151,7 +151,7 @@ function teamAbbreviation(name) {
        case "New York Yankees":
          return "NYY";
          break;
-       case "Oakland Athletics":
+       case "Athletics":
          return "OAK";
          break;
        case "Philadelphia Phillies":
