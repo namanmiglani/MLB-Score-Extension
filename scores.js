@@ -333,3 +333,19 @@ const intervalID = setInterval(fetchInningsData, 1000000)
 
 const switchScreen = setInterval(load, 1200)
 
+
+if (window.supabaseAPI) {
+  window.supabaseAPI.initTeamNotifications().catch(err => {
+    console.error('Failed to initialize team notifications:', err);
+  });
+}
+
+window.addEventListener('DOMContentLoaded', async () => {
+  try {
+    const { initTeamPreferencesUI } = await import('./teamPreferences.js');
+    initTeamPreferencesUI();
+  } catch (err) {
+    console.error('Failed to initialize team preferences UI:', err);
+  }
+});
+
