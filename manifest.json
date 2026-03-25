@@ -1,28 +1,23 @@
 {
-    "name": "Baseball Scoreboard - MLB Box Score",
-    
-    "action": {
-      "default_popup": "popup.html"
-    }, 
-
-    "manifest_version": 4,
-    "version": "1.0.5",
-    "description": "This extension keeps track of the score of all MLB games happening daily. It also allows quick access to the box scores of games and full MLB standings.",
-    "icons": {
-      "16": "LogoExtension.png",
-      "32": "LogoExtension.png",
-      "48": "LogoExtension.png",
-      "128": "LogoExtension.png"
-   },
-
+  "name": "Baseball Scoreboard - MLB Box Score",
+  "action": {
+    "default_popup": "popup.html"
+  },
+  "manifest_version": 3,
+  "version": "2.0.0",
+  "description": "Track MLB game scores, view standings, and play Daily Draft & Player Stat Picks games. Build lineups, make predictions, and track your streak!",
+  "icons": {
+    "16": "LogoExtension.png",
+    "32": "LogoExtension.png",
+    "48": "LogoExtension.png",
+    "128": "LogoExtension.png"
+  },
   "permissions": [
     "http://localhost/*",
-    "notifications"
+    "notifications",
+    "storage"
   ],
-
   "host_permissions": [
     "https://statsapi.mlb.com/*"
   ]
-
-  
 }

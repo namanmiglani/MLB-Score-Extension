@@ -7,6 +7,9 @@
     <script type="module" src="teamPreferences.js"></script>
     <script src="switch.js" defer></script>
     <script src="standings.js" defer></script>
+    <script src="gamesCommon.js" defer></script>
+    <script src="dailyDraft.js" defer></script>
+    <script src="statPicks.js" defer></script>
     <script src="scores.js" defer></script>
     <link rel="stylesheet" href="style.css">
     <title>Baseball Scoreboard - MLB Box Score</title>
@@ -17,6 +20,13 @@
         <header>
             <div id="date-navigation"></div>
             <button id="standings-btn" class="nav-button">📊 Standings</button>
+            <div class="games-dropdown">
+                <button id="games-btn" class="nav-button">🎮 Games ▾</button>
+                <div class="games-dropdown-content">
+                    <button id="daily-draft-btn" class="dropdown-item">💰 Daily Draft</button>
+                    <button id="stat-picks-btn" class="dropdown-item">🎯 Stat Picks</button>
+                </div>
+            </div>
         </header>
         
         <!-- Scores View -->
@@ -34,6 +44,64 @@
             <div class="last-updated" id="standings-last-updated"></div>
             <div id="standings-container">
                 <div class="loading-spinner">Loading standings...</div>
+            </div>
+        </div>
+        
+        <!-- Daily Draft View -->
+        <div id="daily-draft-view" class="view hidden">
+            <div class="game-header">
+                <button id="back-from-draft" class="back-btn">← Back</button>
+                <h2>💰 Daily Draft</h2>
+                <div class="budget-display">$<span id="remaining-budget">50000</span></div>
+            </div>
+            <div class="draft-container">
+                <div class="lineup-section">
+                    <h3>My Lineup (<span id="lineup-count">0</span>/9)</h3>
+                    <div id="lineup-slots" class="lineup-grid"></div>
+                    <button id="submit-lineup-btn" class="submit-btn" disabled>Submit Lineup</button>
+                    <button id="view-draft-history-btn" class="secondary-btn">View History</button>
+                </div>
+                <div class="players-section">
+                    <div class="player-controls">
+                        <div class="position-filters" id="position-filters"></div>
+                        <select id="sort-players" class="sort-select">
+                            <option value="salary-desc">Salary: High to Low</option>
+                            <option value="salary-asc">Salary: Low to High</option>
+                            <option value="points-desc">Projected Points</option>
+                        </select>
+                    </div>
+                    <div id="players-list" class="players-grid">
+                        <div class="loading-spinner">Loading players...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Stat Picks View -->
+        <div id="stat-picks-view" class="view hidden">
+            <div class="game-header">
+                <button id="back-from-picks" class="back-btn">← Back</button>
+                <h2>🎯 Player Stat Picks</h2>
+                <button id="refresh-picks" class="refresh-btn" title="Refresh picks">↻</button>
+            </div>
+            <div class="streak-display">
+                <div class="current-streak">
+                    <span class="streak-label">Current Streak</span>
+                    <span class="streak-number" id="current-streak">0</span>
+                </div>
+                <div class="best-streak">
+                    <span class="streak-label">Best Streak</span>
+                    <span class="streak-number" id="best-streak">0</span>
+                </div>
+            </div>
+            <div class="picks-container">
+                <h3>Today's Picks</h3>
+                <div id="picks-list" class="picks-grid">
+                    <div class="loading-spinner">Loading picks...</div>
+                </div>
+            </div>
+            <div class="picks-history-section">
+                <button id="view-picks-history-btn" class="secondary-btn">View Pick History</button>
             </div>
         </div>
     </div>

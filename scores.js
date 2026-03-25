@@ -391,15 +391,22 @@ function switchToStandings() {
 function switchToScores() {
   console.log('Switching to scores view');
   
+  // Hide all views
+  const allViews = document.querySelectorAll('.view');
+  allViews.forEach(view => {
+    view.classList.remove('active');
+    view.classList.add('hidden');
+  });
+  
   // Show scores view
   const scoresView = document.getElementById('scores-view');
-  const standingsView = document.getElementById('standings-view');
-  const standingsBtn = document.getElementById('standings-btn');
   const dateNav = document.getElementById('date-navigation');
   
-  if (scoresView) scoresView.classList.remove('hidden');
-  if (standingsView) standingsView.classList.add('hidden');
-  if (standingsBtn) standingsBtn.classList.remove('active');
+  if (scoresView) {
+    scoresView.classList.remove('hidden');
+    scoresView.classList.add('active');
+  }
+  
   if (dateNav) dateNav.style.display = 'flex';
   
   // Resume score updates
@@ -412,11 +419,16 @@ function switchToScores() {
   currentView = 'scores';
 }
 
+// Make switchToScores available globally for game views
+window.switchToScores = switchToScores;
+
 // Initialize navigation event listeners
 document.addEventListener('DOMContentLoaded', () => {
   const standingsBtn = document.getElementById('standings-btn');
   const backToScoresBtn = document.getElementById('back-to-scores');
   const refreshStandingsBtn = document.getElementById('refresh-standings');
+  const gamesBtn = document.getElementById('games-btn');
+  const gamesDropdown = document.querySelector('.games-dropdown-content');
   
   if (standingsBtn) {
     standingsBtn.addEventListener('click', switchToStandings);
@@ -431,6 +443,30 @@ document.addEventListener('DOMContentLoaded', () => {
       if (window.loadStandings) {
         window.loadStandings(true); // Force refresh
       }
+    });
+  }
+  
+  // Toggle games dropdown on click
+  if (gamesBtn) {
+    gamesBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (gamesDropdown) {
+        gamesDropdown.classList.toggle('show');
+      }
+    });
+  }
+  
+  // Close dropdown when clicking outside
+  document.addEventListener('click', (e) => {
+    if (gamesDropdown && !e.target.closest('.games-dropdown')) {
+      gamesDropdown.classList.remove('show');
+    }
+  });
+  
+  // Close dropdown after selecting an item
+  if (gamesDropdown) {
+    gamesDropdown.addEventListener('click', () => {
+      gamesDropdown.classList.remove('show');
     });
   }
 });
