@@ -92,7 +92,10 @@ function dateDaysBeforeLink(days) {
 }
 
 function headerDaysBeforeAfter() {
-    const header = document.querySelector('header')
+    const header = document.querySelector('header');
+    const dateNav = document.getElementById('date-navigation');
+    
+    if (!dateNav) return;
     
     let twoDayAgo = dateDaysBefore(2)
     let twoDayAgoDiv = document.createElement('button')
@@ -101,7 +104,7 @@ function headerDaysBeforeAfter() {
     twoDayAgoDiv.addEventListener('click', function(){
     dateDaysBeforeLink(2)
     });
-    header.appendChild(twoDayAgoDiv)
+    dateNav.appendChild(twoDayAgoDiv)
 
     let oneDayAgo = dateDaysBefore(1)
     let oneDayAgoDiv = document.createElement('button')
@@ -110,7 +113,7 @@ function headerDaysBeforeAfter() {
     oneDayAgoDiv.addEventListener('click', function(){
     dateDaysBeforeLink(1)
     });
-    header.appendChild(oneDayAgoDiv)
+    dateNav.appendChild(oneDayAgoDiv)
 
 
     let today = dateDaysBefore(0)
@@ -120,7 +123,7 @@ function headerDaysBeforeAfter() {
     todayDiv.addEventListener('click', function(){
     dateDaysBeforeLink(0)
     });
-    header.appendChild(todayDiv)
+    dateNav.appendChild(todayDiv)
 
     let oneDayAhead = dateDaysBefore(-1)
     let oneDayAheadDiv = document.createElement('button')
@@ -129,7 +132,7 @@ function headerDaysBeforeAfter() {
     oneDayAheadDiv.addEventListener('click', function(){
     dateDaysBeforeLink(-1)
     });
-    header.appendChild(oneDayAheadDiv)
+    dateNav.appendChild(oneDayAheadDiv)
 
     let twoDaysAhead = dateDaysBefore(-2)
     let twoDaysAheadDiv = document.createElement('button')
@@ -138,7 +141,7 @@ function headerDaysBeforeAfter() {
     twoDaysAheadDiv.addEventListener('click', function(){
     dateDaysBeforeLink(-2)
     });
-    header.appendChild(twoDaysAheadDiv)
+    dateNav.appendChild(twoDaysAheadDiv)
 }
 
 headerDaysBeforeAfter()
@@ -346,6 +349,89 @@ window.addEventListener('DOMContentLoaded', async () => {
     initTeamPreferencesUI();
   } catch (err) {
     console.error('Failed to initialize team preferences UI:', err);
+  }
+});
+
+
+// ======================================================
+// View Switching Logic
+// ======================================================
+
+let currentView = 'scores';
+let scoreUpdateInterval = null;
+
+function switchToStandings() {
+  console.log('Switching to standings view');
+  
+  // Hide scores view
+  const scoresView = document.getElementById('scores-view');
+  const standingsView = document.getElementById('standings-view');
+  const standingsBtn = document.getElementById('standings-btn');
+  const dateNav = document.getElementById('date-navigation');
+  
+  if (scoresView) scoresView.classList.add('hidden');
+  if (standingsView) standingsView.classList.remove('hidden');
+  if (standingsBtn) standingsBtn.classList.add('active');
+  if (dateNav) dateNav.style.display = 'none';
+  
+  // Pause score updates to save resources
+  if (scoreUpdateInterval) {
+    clearInterval(scoreUpdateInterval);
+    scoreUpdateInterval = null;
+  }
+  
+  currentView = 'standings';
+  
+  // Load standings data
+  if (window.loadStandings) {
+    window.loadStandings();
+  }
+}
+
+function switchToScores() {
+  console.log('Switching to scores view');
+  
+  // Show scores view
+  const scoresView = document.getElementById('scores-view');
+  const standingsView = document.getElementById('standings-view');
+  const standingsBtn = document.getElementById('standings-btn');
+  const dateNav = document.getElementById('date-navigation');
+  
+  if (scoresView) scoresView.classList.remove('hidden');
+  if (standingsView) standingsView.classList.add('hidden');
+  if (standingsBtn) standingsBtn.classList.remove('active');
+  if (dateNav) dateNav.style.display = 'flex';
+  
+  // Resume score updates
+  if (!scoreUpdateInterval) {
+    // Restart the score fetching
+    fetchScoresData();
+    scoreUpdateInterval = setInterval(fetchScoresData, 1000);
+  }
+  
+  currentView = 'scores';
+}
+
+// Initialize navigation event listeners
+document.addEventListener('DOMContentLoaded', () => {
+  const standingsBtn = document.getElementById('standings-btn');
+  const backToScoresBtn = document.getElementById('back-to-scores');
+  const refreshStandingsBtn = document.getElementById('refresh-standings');
+  
+  if (standingsBtn) {
+    standingsBtn.addEventListener('click', switchToStandings);
+  }
+  
+  if (backToScoresBtn) {
+    backToScoresBtn.addEventListener('click', switchToScores);
+  }
+  
+  if (refreshStandingsBtn) {
+    refreshStandingsBtn.addEventListener('click', () => {
+      if (window.loadStandings) {
+        window.loadStandings(true); // Force refresh
+      }
+    });
   }
 });
 

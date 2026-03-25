@@ -6,8 +6,8 @@
     }, 
 
     "manifest_version": 4,
-    "version": "1.0.4",
-    "description": "This extension keeps track of the score of all MLB games happening daily. It also allows quick access to the box scores of games.",
+    "version": "1.0.5",
+    "description": "This extension keeps track of the score of all MLB games happening daily. It also allows quick access to the box scores of games and full MLB standings.",
     "icons": {
       "16": "LogoExtension.png",
       "32": "LogoExtension.png",
@@ -18,6 +18,10 @@
   "permissions": [
     "http://localhost/*",
     "notifications"
+  ],
+
+  "host_permissions": [
+    "https://statsapi.mlb.com/*"
   ]
 
   

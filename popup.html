@@ -5,16 +5,37 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script type="module" src="supabaseClient.js"></script>
     <script type="module" src="teamPreferences.js"></script>
-    <script src="scores.js" defer></script>
     <script src="switch.js" defer></script>
+    <script src="standings.js" defer></script>
+    <script src="scores.js" defer></script>
     <link rel="stylesheet" href="style.css">
     <title>Baseball Scoreboard - MLB Box Score</title>
 </head>
-<div id="loading"></div>
-<div id="show">
-    <header></header>
-    <body id="liveScoreboard">
-        <div class="game-boxes" id="grid-container"></div>
-    </body>
-</div>
+<body>
+    <div id="loading"></div>
+    <div id="show">
+        <header>
+            <div id="date-navigation"></div>
+            <button id="standings-btn" class="nav-button">📊 Standings</button>
+        </header>
+        
+        <!-- Scores View -->
+        <div id="scores-view" class="view active">
+            <div class="game-boxes" id="grid-container"></div>
+        </div>
+        
+        <!-- Standings View -->
+        <div id="standings-view" class="view hidden">
+            <div class="standings-header">
+                <button id="back-to-scores" class="back-btn">← Scores</button>
+                <h2>MLB Standings</h2>
+                <button id="refresh-standings" class="refresh-btn" title="Refresh standings data">↻</button>
+            </div>
+            <div class="last-updated" id="standings-last-updated"></div>
+            <div id="standings-container">
+                <div class="loading-spinner">Loading standings...</div>
+            </div>
+        </div>
+    </div>
+</body>
 </html>
