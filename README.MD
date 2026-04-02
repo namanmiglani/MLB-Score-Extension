@@ -1,64 +1,108 @@
-**MLB Score Board Chrome Extension**
+# Baseball Scoreboard - MLB Box Score
 
-![Extension](UpdatedExtesnionPic.png "Extension")
+<div align="center">
 
-[Link to extension](https://chromewebstore.google.com/detail/baseball-scoreboard-mlb-b/kfooeopgnpkdjfacnnofdfmknhandiml)
+![Extension Preview](UpdatedExtesnionPic.png)
 
-**Built With**
+[![Chrome Web Store](https://img.shields.io/badge/Chrome-Web%20Store-blue?logo=google-chrome&logoColor=white)](https://chromewebstore.google.com/detail/baseball-scoreboard-mlb-b/kfooeopgnpkdjfacnnofdfmknhandiml)
+[![Users](https://img.shields.io/badge/Users-400%2B-success)](https://chromewebstore.google.com/detail/baseball-scoreboard-mlb-b/kfooeopgnpkdjfacnnofdfmknhandiml)
+[![Installs](https://img.shields.io/badge/Total%20Installs-2.23K-blue)](https://chromewebstore.google.com/detail/baseball-scoreboard-mlb-b/kfooeopgnpkdjfacnnofdfmknhandiml)
+[![Version](https://img.shields.io/badge/version-2.0.1-green.svg)](manifest.json)
 
-- Python
-- HTML
-- CSS
-- Javascript
-- Express.js
-- Node.js
+**A comprehensive Chrome extension for tracking live MLB scores, standings, and playing fantasy games**
 
-**Features**
+[Install Extension](https://chromewebstore.google.com/detail/baseball-scoreboard-mlb-b/kfooeopgnpkdjfacnnofdfmknhandiml)
 
-- Live MLB game scores with real-time updates
-- Box score links for detailed game information
-- Date navigation (view scores from past/future days)
-- Game status indicators (In Progress, Final, Scheduled)
-- Inning-by-inning updates for live games
-- Team logos and abbreviations
-- **Full MLB Standings** (v1.0.5)
-  - Division standings for all 6 MLB divisions
-  - Wild Card race standings and rankings
-  - Playoff clinch indicators (x, y, z)
-  - Magic numbers for division/playoff clinching (September+)
-  - Favorite team highlighting
-  - 30-minute data caching for performance
-- **Daily Draft Game** (NEW in v2.0.0) 💰
-  - Build a daily fantasy lineup with $50K salary cap
-  - Pick 9 players (C, 1B, 2B, 3B, SS, OF×3, P)
-  - Player salaries based on recent performance
-  - Real-time scoring based on actual game stats
-  - Weekly salary updates
-  - Track lineup history (last 30 days)
-  - Season statistics and best scores
-- **Player Stat Picks Game** (NEW in v2.0.0) 🎯
-  - Make daily predictions on player performances
-  - Three types of picks:
-    - Over/Under: Player hits, home runs, strikeouts, etc.
-    - Head-to-Head: Which player will perform better
-    - Prop Bets: Rare events (no-hitters, grand slams, cycles)
-  - Streak tracking (current & personal best)
-  - Pick history calendar (last 60 days)
-  - Picks lock when games start
-  - Automatic result resolution after games
-- Chrome sync storage for cross-device pick/lineup sync
-- Team preference selection for notifications
+</div>
 
-**TODO**
+---
 
-- [x] Add abilty to see previous and future days
-- [x] Add full box scores
-- [x] Add game inning status
-- [x] Add standings
-- [x] Add Daily Draft game mode
-- [x] Add Player Stat Picks game mode
-- [ ] Notifications
-- [ ] Player statistics in live games
+## Overview
+
+Baseball Scoreboard is a feature-rich Chrome extension that brings the complete MLB experience to your browser. Track live game scores, view comprehensive standings, and compete in daily fantasy games - all from a convenient popup interface.
+
+## Features
+
+### Live Game Tracking
+- **Real-time Score Updates** - Get live MLB game scores as they happen
+- **Inning-by-Inning Updates** - Follow games pitch-by-pitch with live inning status
+- **Game Status Indicators** - See at a glance which games are In Progress, Final, or Scheduled
+- **Date Navigation** - Browse scores from any past or future day
+- **Box Score Links** - Quick access to detailed game statistics
+- **Team Logos & Abbreviations** - Visual team identification
+
+
+### Additional Features
+- **Chrome Sync Storage** - Access picks and lineups across all your devices
+- **Team Preferences** - Set favorite team for personalized notifications (coming soon)
+
+## Tech Stack
+
+- **Frontend:** HTML, CSS, JavaScript
+- **Backend:** Node.js, Express.js
+- **Data Scraping:** Python
+- **API:** MLB Stats API
+- **Storage:** Chrome Storage API (sync & local)
+
+## Installation
+
+### From Chrome Web Store (Recommended)
+1. Visit the [Chrome Web Store listing](https://chromewebstore.google.com/detail/baseball-scoreboard-mlb-b/kfooeopgnpkdjfacnnofdfmknhandiml)
+2. Click "Add to Chrome"
+3. Click the extension icon in your toolbar to start using it
+
+
+### Project Structure
+```
+MLB-Score-Extension/
+├── manifest.json          # Extension configuration
+├── popup.html            # Main popup interface
+├── scores.js             # Score display logic
+├── standings.js          # Standings logic
+├── style.css             # Styling
+├── server.js             # Express backend server
+├── webscrape.py          # MLB data scraping
+├── images/               # Team logos and assets
+└── Standings/            # Standings-related files
+```
+
+## Roadmap
+
+### Completed Features
+- [x] Previous and future day navigation
+- [x] Full box scores
+- [x] Game inning status
+- [x] Complete MLB standings
+
+
+### Upcoming Features
+- [ ] Push notifications for favorite team games
+- [ ] Live player statistics in games
 - [ ] Dark mode theme
-- [ ] Draft/Picks history modals with detailed views
-- [ ] Advanced streak statistics and graphs
+- [ ] Detailed history modals for Draft/Picks
+- [ ] Advanced streak statistics and performance graphs
+- [ ] Player comparison tools
+- [ ] Customizable alerts and reminders
+
+## Contributing
+
+Contributions are welcome! Feel free to submit issues and pull requests.
+
+
+
+## Support
+
+If you enjoy using Baseball Scoreboard, please consider:
+- ⭐ Starring this repository
+- 📝 Leaving a review on the Chrome Web Store
+- 🐛 Reporting bugs or suggesting features
+
+---
+
+<div align="center">
+
+**Made for baseball fans, by baseball fans**
+
+[Chrome Web Store](https://chromewebstore.google.com/detail/baseball-scoreboard-mlb-b/kfooeopgnpkdjfacnnofdfmknhandiml) • v2.0.1
+
+</div>
