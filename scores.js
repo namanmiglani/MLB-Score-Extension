@@ -11,6 +11,7 @@ let idf;
 let teamNameData;
 let currentDate;
 let myMap = new Map();
+let scoreUpdateInterval = null;
 const body = document.querySelector('body');
 
 function load() {
@@ -273,24 +274,30 @@ const updateScore = (scoreboardId, data, isError) => {
     }
 }
 
-const fetchScoresData = setInterval( 
-    (filterParams) => {
-        fetch(gamesURL)
-        .then(response => {
-            return response.json();
-        })
-        .then(function(data){
-            scoreData = data;
-            updateScore("liveScoreboard", scoreData);
-        })
-        .catch((err) => {
-            updateScore("liveScoreboard", scoreData, true);
-            console.error(err);
-        });
+function fetchScoresData() {
+    fetch(gamesURL)
+    .then(response => {
+        return response.json();
+    })
+    .then(function(data){
+        scoreData = data;
+        updateScore("liveScoreboard", scoreData);
+        // Once we have data, we can hide the loading screen immediately
+        load();
+    })
+    .catch((err) => {
+        updateScore("liveScoreboard", scoreData, true);
+        console.error(err);
+        // Even on error, we should probably stop the loading state
+        load();
+    });
 }
-, 1000);
 
-fetchScoresData;
+// Fetch immediately on startup
+fetchScoresData();
+
+// Then set up the interval for updates
+scoreUpdateInterval = setInterval(fetchScoresData, 1000);
 
 
 const updateInning = (data, isError) => {
@@ -334,23 +341,7 @@ fetchInningsData();
 
 const intervalID = setInterval(fetchInningsData, 1000000)
 
-const switchScreen = setInterval(load, 1200)
-
-
-if (window.supabaseAPI) {
-  window.supabaseAPI.initTeamNotifications().catch(err => {
-    console.error('Failed to initialize team notifications:', err);
-  });
-}
-
-window.addEventListener('DOMContentLoaded', async () => {
-  try {
-    const { initTeamPreferencesUI } = await import('./teamPreferences.js');
-    initTeamPreferencesUI();
-  } catch (err) {
-    console.error('Failed to initialize team preferences UI:', err);
-  }
-});
+// const switchScreen = setInterval(load, 1200) - Removed artificial delay
 
 
 // ======================================================
@@ -358,7 +349,6 @@ window.addEventListener('DOMContentLoaded', async () => {
 // ======================================================
 
 let currentView = 'scores';
-let scoreUpdateInterval = null;
 
 function switchToStandings() {
   console.log('Switching to standings view');
@@ -370,7 +360,10 @@ function switchToStandings() {
   const dateNav = document.getElementById('date-navigation');
   
   if (scoresView) scoresView.classList.add('hidden');
-  if (standingsView) standingsView.classList.remove('hidden');
+  if (standingsView) {
+    standingsView.classList.remove('hidden');
+    standingsView.classList.add('active');
+  }
   if (standingsBtn) standingsBtn.classList.add('active');
   if (dateNav) dateNav.style.display = 'none';
   
@@ -401,10 +394,15 @@ function switchToScores() {
   // Show scores view
   const scoresView = document.getElementById('scores-view');
   const dateNav = document.getElementById('date-navigation');
+  const standingsBtn = document.getElementById('standings-btn');
   
   if (scoresView) {
     scoresView.classList.remove('hidden');
     scoresView.classList.add('active');
+  }
+  
+  if (standingsBtn) {
+    standingsBtn.classList.remove('active');
   }
   
   if (dateNav) dateNav.style.display = 'flex';
@@ -419,55 +417,26 @@ function switchToScores() {
   currentView = 'scores';
 }
 
-// Make switchToScores available globally for game views
-window.switchToScores = switchToScores;
-
 // Initialize navigation event listeners
 document.addEventListener('DOMContentLoaded', () => {
-  const standingsBtn = document.getElementById('standings-btn');
-  const backToScoresBtn = document.getElementById('back-to-scores');
-  const refreshStandingsBtn = document.getElementById('refresh-standings');
-  const gamesBtn = document.getElementById('games-btn');
-  const gamesDropdown = document.querySelector('.games-dropdown-content');
-  
-  if (standingsBtn) {
-    standingsBtn.addEventListener('click', switchToStandings);
-  }
-  
-  if (backToScoresBtn) {
-    backToScoresBtn.addEventListener('click', switchToScores);
-  }
-  
-  if (refreshStandingsBtn) {
-    refreshStandingsBtn.addEventListener('click', () => {
-      if (window.loadStandings) {
-        window.loadStandings(true); // Force refresh
-      }
-    });
-  }
-  
-  // Toggle games dropdown on click
-  if (gamesBtn) {
-    gamesBtn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      if (gamesDropdown) {
-        gamesDropdown.classList.toggle('show');
-      }
-    });
-  }
-  
-  // Close dropdown when clicking outside
-  document.addEventListener('click', (e) => {
-    if (gamesDropdown && !e.target.closest('.games-dropdown')) {
-      gamesDropdown.classList.remove('show');
+    const standingsBtn = document.getElementById('standings-btn');
+    const backToScoresBtn = document.getElementById('back-to-scores');
+    const refreshStandingsBtn = document.getElementById('refresh-standings');
+    
+    if (standingsBtn) {
+      standingsBtn.addEventListener('click', switchToStandings);
     }
-  });
-  
-  // Close dropdown after selecting an item
-  if (gamesDropdown) {
-    gamesDropdown.addEventListener('click', () => {
-      gamesDropdown.classList.remove('show');
-    });
-  }
+    
+    if (backToScoresBtn) {
+      backToScoresBtn.addEventListener('click', switchToScores);
+    }
+    
+    if (refreshStandingsBtn) {
+      refreshStandingsBtn.addEventListener('click', () => {
+        if (window.loadStandings) {
+          window.loadStandings(true); // Force refresh
+        }
+      });
+    }
 });
 
