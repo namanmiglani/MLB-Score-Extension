@@ -59,22 +59,19 @@ function monthConversion(n) {
     }
 }
 
-function timeConversion(hour) {
-  if (0 <= hour && hour <= 4) {
-    return (hour + 8);
-  } else if (5 <= hour && hour <= 16) {
-    return (hour - 4);
-  } else if (17 <= hour && hour <= 23) {
-    return (hour - 16);
-  }
-}
+// Convert game time to user's local timezone
+function formatGameTime(gameDate) {
+  // Return a user-friendly 'TBD' when the gameDate is missing or invalid
+  if (!gameDate) return 'TBD';
 
-function dayTime(hour) {
-  if (4 <= hour && hour <= 15) {
-    return "am";
-  } else {
-    return "pm";
-  }
+  const date = new Date(gameDate);
+  if (isNaN(date.getTime())) return 'TBD';
+
+  return date.toLocaleTimeString('en-US', {
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true
+  });
 }
 
 function dateDaysBefore(days) {
@@ -172,74 +169,110 @@ function boxScore(home, away){
 
 function inningSearch(){
   idf.forEach(game => {
-    //console.log(game)
-    myMap.set((game['gameGuid']), ((game['linescore'])['inningHalf']) + " " + ((game['linescore'])['currentInningOrdinal']))
+    // Only add to map if linescore data exists
+    if (game?.linescore?.inningHalf && game?.linescore?.currentInningOrdinal) {
+      myMap.set(game.gameGuid, game.linescore.inningHalf + " " + game.linescore.currentInningOrdinal);
+    }
   });
 }
 
 
 const populateScoreboard = (game, body) => {
-  //console.log(game)
-  //console.log(game)
-  //${((game['status'])['detailedState'])}
-    if ((((game['status'])['detailedState']) === "In Progress")){
-      const gameBox  = document.createElement('div');
-      gameBox.classList = 'score-box grid-item';
-      gameBox.innerHTML = ` 
-      
-      <a href= ${boxScore(teamAbbreviation(((((game['teams'])['home'])['team'])['name'])), teamAbbreviation(((((game['teams'])['away'])['team'])['name'])))} target="_blank">
-      <p class="status">
-      ${myMap.get((game['gameGuid']))}
-      <p>
-      <div class="with-image">
-      <img src=${teamLogo(((((game['teams'])['home'])['team'])['name']))} height="20px" width="20px">
-      <div>${teamAbbreviation(((((game['teams'])['home'])['team'])['name']))} : ${(((game['teams'])['home'])['score'])} </div>
-      </div>
-      <div class="with-image">
-      <img src=${teamLogo(((((game['teams'])['away'])['team'])['name']))} height="20px" width="20px">
-      <div>${teamAbbreviation(((((game['teams'])['away'])['team'])['name']))} : ${(((game['teams'])['away'])['score'])}</div>
-      </div>
+  // Safely read status and scores
+  const detailedState = game?.status?.detailedState;
+  const abstractState = game?.status?.abstractGameState;
+  const homeScore = game?.teams?.home?.score;
+  const awayScore = game?.teams?.away?.score;
+
+  // If game is In Progress, render with inning info
+  if (detailedState === "In Progress") {
+    if (homeScore === undefined || awayScore === undefined) return; // skip incomplete entry
+
+    // Get inning info from map, fallback to "Live" if not available
+    const inningInfo = myMap.get(game.gameGuid) || "Live";
+
+    const gameBox = document.createElement('div');
+    gameBox.classList = 'score-box grid-item';
+    gameBox.innerHTML = ` 
+      <a href=${boxScore(teamAbbreviation(game.teams.home.team.name), teamAbbreviation(game.teams.away.team.name))} target="_blank">
+        <p class="status">${inningInfo}<p>
+        <div class="with-image">
+          <img src=${teamLogo(game.teams.home.team.name)} height="20px" width="20px">
+          <div>${teamAbbreviation(game.teams.home.team.name)} : ${homeScore} </div>
+        </div>
+        <div class="with-image">
+          <img src=${teamLogo(game.teams.away.team.name)} height="20px" width="20px">
+          <div>${teamAbbreviation(game.teams.away.team.name)} : ${awayScore}</div>
+        </div>
       </a>
-      `;
-      document.getElementById('grid-container').appendChild(gameBox);
-    } else if ((((game['status'])['abstractGameState']) === "Final") || (((game['status'])['detailedState']) === "Final")){
-      const gameBox  = document.createElement('div');
-      gameBox.classList = 'score-box grid-item';
-      gameBox.innerHTML = ` 
-      
-      <a href= ${boxScore(teamAbbreviation(((((game['teams'])['home'])['team'])['name'])), teamAbbreviation(((((game['teams'])['away'])['team'])['name'])))} target="_blank">
-      <p class="status">Final<p>
-      <div class="with-image">
-      <img src=${teamLogo(((((game['teams'])['home'])['team'])['name']))} height="20px" width="20px">
-      <div>${teamAbbreviation(((((game['teams'])['home'])['team'])['name']))} : ${(((game['teams'])['home'])['score'])} </div>
-      </div>
-      <div class="with-image">
-      <img src=${teamLogo(((((game['teams'])['away'])['team'])['name']))} height="20px" width="20px">
-      <div>${teamAbbreviation(((((game['teams'])['away'])['team'])['name']))} : ${(((game['teams'])['away'])['score'])}</div>
-      </div>
+    `;
+    document.getElementById('grid-container').appendChild(gameBox);
+    return;
+  }
+
+  // If game is Final (check multiple possible final states)
+  if (abstractState === "Final" || detailedState === "Final" || 
+      detailedState === "Game Over" || detailedState === "Completed Early") {
+    if (homeScore === undefined || awayScore === undefined) return; // skip incomplete final
+
+    const gameBox = document.createElement('div');
+    gameBox.classList = 'score-box grid-item';
+    gameBox.innerHTML = ` 
+      <a href=${boxScore(teamAbbreviation(game.teams.home.team.name), teamAbbreviation(game.teams.away.team.name))} target="_blank">
+        <p class="status">Final<p>
+        <div class="with-image">
+          <img src=${teamLogo(game.teams.home.team.name)} height="20px" width="20px">
+          <div>${teamAbbreviation(game.teams.home.team.name)} : ${homeScore} </div>
+        </div>
+        <div class="with-image">
+          <img src=${teamLogo(game.teams.away.team.name)} height="20px" width="20px">
+          <div>${teamAbbreviation(game.teams.away.team.name)} : ${awayScore}</div>
+        </div>
       </a>
-      `;
-      document.getElementById('grid-container').appendChild(gameBox);
-    } else {
-      const gameBox  = document.createElement('div');
-      gameBox.classList = 'score-box grid-item';
-      gameBox.innerHTML = ` 
-      
-      <a href= ${boxScore(teamAbbreviation(((((game['teams'])['home'])['team'])['name'])), teamAbbreviation(((((game['teams'])['away'])['team'])['name'])))} target="_blank">
-      <p class="status">${String(timeConversion(Number((game['gameDate']).substring(11,13)))) + (game['gameDate']).substring(13,16) + " " + dayTime(Number((game['gameDate']).substring(11,13)))}<p>
-      <div class="with-image">
-      <img src=${teamLogo(((((game['teams'])['home'])['team'])['name']))} height="20px" width="20px">
-      <div>${teamAbbreviation(((((game['teams'])['home'])['team'])['name']))}</div>
-      </div>
-      <div class="with-image">
-      <img src=${teamLogo(((((game['teams'])['away'])['team'])['name']))} height="20px" width="20px">
-      <div>${teamAbbreviation(((((game['teams'])['away'])['team'])['name']))}</div>
-      </div>
+    `;
+    document.getElementById('grid-container').appendChild(gameBox);
+    return;
+  }
+
+  // If game has scores but didn't match above states, treat as Final
+  // This handles edge cases where the status might not be set correctly
+  if (homeScore !== undefined && awayScore !== undefined) {
+    const gameBox = document.createElement('div');
+    gameBox.classList = 'score-box grid-item';
+    gameBox.innerHTML = ` 
+      <a href=${boxScore(teamAbbreviation(game.teams.home.team.name), teamAbbreviation(game.teams.away.team.name))} target="_blank">
+        <p class="status">Final<p>
+        <div class="with-image">
+          <img src=${teamLogo(game.teams.home.team.name)} height="20px" width="20px">
+          <div>${teamAbbreviation(game.teams.home.team.name)} : ${homeScore} </div>
+        </div>
+        <div class="with-image">
+          <img src=${teamLogo(game.teams.away.team.name)} height="20px" width="20px">
+          <div>${teamAbbreviation(game.teams.away.team.name)} : ${awayScore}</div>
+        </div>
       </a>
-      `;
-      document.getElementById('grid-container').appendChild(gameBox);   
-    }
-    //((game['status'])['detailedState'])
+    `;
+    document.getElementById('grid-container').appendChild(gameBox);
+    return;
+  }
+
+  // Default: scheduled / preview games - show matchup and time
+  const gameBox = document.createElement('div');
+  gameBox.classList = 'score-box grid-item';
+  gameBox.innerHTML = ` 
+    <a href=${boxScore(teamAbbreviation(game.teams.home.team.name), teamAbbreviation(game.teams.away.team.name))} target="_blank">
+      <p class="status">${formatGameTime(game.gameDate)}<p>
+      <div class="with-image">
+        <img src=${teamLogo(game.teams.home.team.name)} height="20px" width="20px">
+        <div>${teamAbbreviation(game.teams.home.team.name)}</div>
+      </div>
+      <div class="with-image">
+        <img src=${teamLogo(game.teams.away.team.name)} height="20px" width="20px">
+        <div>${teamAbbreviation(game.teams.away.team.name)}</div>
+      </div>
+    </a>
+  `;
+  document.getElementById('grid-container').appendChild(gameBox);
 }
 
 const populateScoresForDay = (data, day, body) => {
@@ -439,4 +472,3 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     }
 });
-

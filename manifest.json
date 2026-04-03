@@ -4,7 +4,7 @@
     "default_popup": "popup.html"
   },
   "manifest_version": 3,
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "Track MLB game scores, view standings, and play Daily Draft & Player Stat Picks games.",
   "icons": {
     "16": "LogoExtension.png",
