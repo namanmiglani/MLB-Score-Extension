@@ -234,6 +234,31 @@ const populateScoreboard = (game, body) => {
     return;
   }
 
+  // If game is Preview/Scheduled/Pre-Game, show start time
+  // Check this BEFORE checking for scores, since Pre-Game games have score: 0
+  if (abstractState === "Preview" || 
+      detailedState === "Pre-Game" || 
+      detailedState === "Scheduled" ||
+      detailedState === "Warmup") {
+    const gameBox = document.createElement('div');
+    gameBox.classList = 'score-box grid-item';
+    gameBox.innerHTML = ` 
+      <a href=${boxScore(teamAbbreviation(game.teams.home.team.name), teamAbbreviation(game.teams.away.team.name))} target="_blank">
+        <p class="status">${formatGameTime(game.gameDate)}<p>
+        <div class="with-image">
+          <img src=${teamLogo(game.teams.home.team.name)} height="20px" width="20px">
+          <div>${teamAbbreviation(game.teams.home.team.name)}</div>
+        </div>
+        <div class="with-image">
+          <img src=${teamLogo(game.teams.away.team.name)} height="20px" width="20px">
+          <div>${teamAbbreviation(game.teams.away.team.name)}</div>
+        </div>
+      </a>
+    `;
+    document.getElementById('grid-container').appendChild(gameBox);
+    return;
+  }
+
   // If game has scores but didn't match above states, treat as Final
   // This handles edge cases where the status might not be set correctly
   if (homeScore !== undefined && awayScore !== undefined) {
