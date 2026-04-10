@@ -1,11 +1,12 @@
 {
-  "name": "Baseball Scoreboard - MLB Box Score",
+  "name": "MLB Scoreboard - Live Baseball Scores & Standings",
+  "short_name": "MLB Scores",
   "action": {
     "default_popup": "popup.html"
   },
   "manifest_version": 3,
-  "version": "2.0.4",
-  "description": "Track MLB game scores, view standings, and play Daily Draft & Player Stat Picks games.",
+  "version": "2.1.0",
+  "description": "Real-time MLB scores, live box scores, and complete league standings. The fastest way to track every baseball game and team stats.",
   "icons": {
     "16": "LogoExtension.png",
     "32": "LogoExtension.png",
