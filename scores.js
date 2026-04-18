@@ -100,7 +100,8 @@ function headerDaysBeforeAfter() {
     twoDayAgoDiv.classList = "days"
     twoDayAgoDiv.textContent=twoDayAgo;
     twoDayAgoDiv.addEventListener('click', function(){
-    dateDaysBeforeLink(2)
+      dateDaysBeforeLink(2);
+      fetchScoresData(); // Immediate update
     });
     dateNav.appendChild(twoDayAgoDiv)
 
@@ -109,7 +110,8 @@ function headerDaysBeforeAfter() {
     oneDayAgoDiv.classList = "days"
     oneDayAgoDiv.textContent=oneDayAgo;
     oneDayAgoDiv.addEventListener('click', function(){
-    dateDaysBeforeLink(1)
+      dateDaysBeforeLink(1);
+      fetchScoresData(); // Immediate update
     });
     dateNav.appendChild(oneDayAgoDiv)
 
@@ -119,7 +121,8 @@ function headerDaysBeforeAfter() {
     todayDiv.classList = "days"
     todayDiv.textContent=today;
     todayDiv.addEventListener('click', function(){
-    dateDaysBeforeLink(0)
+      dateDaysBeforeLink(0);
+      fetchScoresData(); // Immediate update
     });
     dateNav.appendChild(todayDiv)
 
@@ -128,7 +131,8 @@ function headerDaysBeforeAfter() {
     oneDayAheadDiv.classList = "days"
     oneDayAheadDiv.textContent=oneDayAhead;
     oneDayAheadDiv.addEventListener('click', function(){
-    dateDaysBeforeLink(-1)
+      dateDaysBeforeLink(-1);
+      fetchScoresData(); // Immediate update
     });
     dateNav.appendChild(oneDayAheadDiv)
 
@@ -137,7 +141,8 @@ function headerDaysBeforeAfter() {
     twoDaysAheadDiv.classList = "days"
     twoDaysAheadDiv.textContent=twoDaysAhead;
     twoDaysAheadDiv.addEventListener('click', function(){
-    dateDaysBeforeLink(-2)
+      dateDaysBeforeLink(-2);
+      fetchScoresData(); // Immediate update
     });
     dateNav.appendChild(twoDaysAheadDiv)
 }
@@ -333,30 +338,19 @@ const updateScore = (scoreboardId, data, isError) => {
 }
 
 function fetchScoresData() {
-    fetch(gamesURL)
+    return fetch(gamesURL)
     .then(response => {
         return response.json();
     })
     .then(function(data){
         scoreData = data;
         updateScore("liveScoreboard", scoreData);
-        // Once we have data, we can hide the loading screen immediately
-        load();
     })
     .catch((err) => {
         updateScore("liveScoreboard", scoreData, true);
         console.error(err);
-        // Even on error, we should probably stop the loading state
-        load();
     });
 }
-
-// Fetch immediately on startup
-fetchScoresData();
-
-// Then set up the interval for updates
-scoreUpdateInterval = setInterval(fetchScoresData, 1000);
-
 
 const updateInning = (data, isError) => {
   //console.log((((data["dates"])[0])['games']))
@@ -388,18 +382,36 @@ function inningLinkGen(){
   return "https://statsapi.mlb.com/api/v1/schedule?sportId=1&sportId=51&sportId=21&startDate="+date.getFullYear() + "-" +  addOne(date.getMonth())  + "-" + date.getDate() +"&endDate="+date.getFullYear() + "-" + addOne(date.getMonth()) + "-" + date.getDate() +"&timeZone=America/New_York&gameType=E&&gameType=S&&gameType=R&&gameType=F&&gameType=D&&gameType=L&&gameType=W&&gameType=A&&gameType=C&language=en&leagueId=104&&leagueId=103&&leagueId=160&&leagueId=590&hydrate=team,linescore(matchup,runners),xrefId,story,flags,statusFlags,broadcasts(all),venue(location),decisions,person,probablePitcher,stats,game(content(media(epg),summary),tickets),seriesStatus(useOverride=true)&sortBy=gameDate,gameStatus,gameType"
 }
 
-function fetchInningsData() { //setInterval( 
-    fetch(inningLinkGen(), requestOptions)
+function fetchInningsData() {
+    return fetch(inningLinkGen(), requestOptions)
     .then((response) => response.json())
     .then((result) => updateInning(result))
     .catch((error) => console.error(error));
 }
-//, 1000);
-fetchInningsData();
 
-const intervalID = setInterval(fetchInningsData, 1000000)
+// Synchronized initial load to prevent UI flickering
+async function initializeApp() {
+    try {
+        // Fetch both essential pieces of data before showing the UI
+        await Promise.all([
+            fetchInningsData(),
+            fetchScoresData()
+        ]);
+    } catch (error) {
+        console.error("Error during initialization:", error);
+    } finally {
+        // Hide loading screen only after both (or failed) fetches
+        load();
+        
+        // Start intervals for regular updates
+        if (!scoreUpdateInterval) {
+            scoreUpdateInterval = setInterval(fetchScoresData, 1000);
+        }
+        setInterval(fetchInningsData, 30000); // Update innings every 30 seconds
+    }
+}
 
-// const switchScreen = setInterval(load, 1200) - Removed artificial delay
+initializeApp();
 
 
 // ======================================================

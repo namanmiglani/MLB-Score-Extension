@@ -5,7 +5,7 @@
     "default_popup": "popup.html"
   },
   "manifest_version": 3,
-  "version": "2.1.0",
+  "version": "2.1.1",
   "description": "Real-time MLB scores, live box scores, and complete league standings. The fastest way to track every baseball game and team stats.",
   "icons": {
     "16": "LogoExtension.png",
